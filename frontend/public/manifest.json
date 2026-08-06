@@ -1,0 +1,31 @@
+{
+  "name": "Jehovah Jireh Ministry",
+  "short_name": "JJM",
+  "description": "Led by the Holy Spirit, serving widows and orphans with God's love",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a365d",
+  "theme_color": "#1a365d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["nonprofit", "charity", "religion"],
+  "lang": "en-US",
+  "dir": "ltr"
+}

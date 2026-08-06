@@ -1,0 +1,189 @@
+.install-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.install-prompt {
+  width: 100%;
+  max-width: 420px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.install-prompt-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+  position: relative;
+  border: 2px solid var(--primary-gold);
+}
+
+.install-dismiss {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  background: var(--light-gray);
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--medium-gray);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.install-dismiss:hover {
+  background: var(--primary-blue);
+  color: var(--white);
+  transform: rotate(90deg);
+}
+
+.install-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 1rem;
+  background: var(--gradient-gold);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--white);
+  box-shadow: var(--shadow-gold);
+  animation: pulse 2s ease infinite;
+}
+
+.install-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(201, 162, 39, 0.1);
+  color: var(--primary-gold);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.install-prompt-content h3 {
+  font-size: 1.4rem;
+  color: var(--primary-blue);
+  margin-bottom: 1.25rem;
+  font-family: var(--font-heading);
+}
+
+.install-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  text-align: left;
+  background: var(--off-white);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.install-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--dark-gray);
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.install-features li:last-child {
+  margin-bottom: 0;
+}
+
+.install-features li svg {
+  color: var(--accent-green);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.install-btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--gradient-gold);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-gold);
+  transition: all var(--transition-base);
+}
+
+.install-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(201, 162, 39, 0.5);
+}
+
+.install-note {
+  margin-top: 1rem !important;
+  margin-bottom: 0 !important;
+  font-size: 0.85rem !important;
+  color: var(--medium-gray) !important;
+}
+
+@media (max-width: 480px) {
+  .install-prompt-overlay {
+    padding: 1rem;
+    align-items: flex-end;
+  }
+
+  .install-prompt {
+    max-width: 100%;
+  }
+
+  .install-prompt-content {
+    padding: 1.5rem;
+  }
+
+  .install-prompt-content h3 {
+    font-size: 1.25rem;
+  }
+
+  .install-features {
+    padding: 1rem;
+  }
+
+  .install-features li {
+    font-size: 0.9rem;
+  }
+}
