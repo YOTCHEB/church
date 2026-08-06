@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FaUsers, FaClipboardList, FaHeart, FaSignOutAlt, FaHome, FaPlus, FaEdit, FaTrash, FaDollarSign, FaChartLine, FaBell, FaSearch, FaFilter, FaDownload, FaCheck, FaTimes, FaImage, FaUpload, FaPlay, FaVideo } from 'react-icons/fa';
 import { staffService, programsService, donationsService, videosService } from '../../supabaseService';
 import { authService } from '../../authService';
+import supabase from '../../supabase';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -159,10 +160,10 @@ const AdminDashboard = () => {
           {activeTab === 'overview' && (
             <OverviewDashboard stats={stats} recentDonations={recentDonations} setActiveTab={setActiveTab} />
           )}
-          {activeTab === 'staff' && <StaffManagement />}
-          {activeTab === 'programs' && <ProgramsManagement />}
-          {activeTab === 'donations' && <DonationsManagement />}
-          {activeTab === 'videos' && <VideosManagement />}
+          {activeTab === 'staff' && <StaffManagement addToast={addToast} />}
+          {activeTab === 'programs' && <ProgramsManagement addToast={addToast} />}
+          {activeTab === 'donations' && <DonationsManagement addToast={addToast} />}
+          {activeTab === 'videos' && <VideosManagement addToast={addToast} />}
         </div>
       </main>
     </div>
@@ -264,7 +265,7 @@ const OverviewDashboard = ({ stats, recentDonations, setActiveTab }) => {
 };
 
 // Staff Management Component
-const StaffManagement = () => {
+const StaffManagement = ({ addToast }) => {
   const [staff, setStaff] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -464,7 +465,7 @@ const StaffManagement = () => {
 };
 
 // Programs Management Component
-const ProgramsManagement = () => {
+const ProgramsManagement = ({ addToast }) => {
   const [programs, setPrograms] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -606,7 +607,7 @@ const ProgramsManagement = () => {
 };
 
 // Donations Management Component
-const DonationsManagement = () => {
+const DonationsManagement = ({ addToast }) => {
   const [donations, setDonations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -807,7 +808,7 @@ const Modal = ({ title, children, onClose, onSubmit, submitLabel }) => {
 };
 
 // Videos Management Component
-const VideosManagement = () => {
+const VideosManagement = ({ addToast }) => {
   const [videos, setVideos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
