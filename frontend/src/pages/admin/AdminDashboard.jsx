@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaUsers, FaClipboardList, FaHeart, FaSignOutAlt, FaHome, FaPlus, FaEdit, FaTrash, FaDollarSign, FaChartLine, FaBell, FaSearch, FaFilter, FaDownload, FaCheck, FaTimes, FaImage, FaUpload, FaPlay, FaVideo } from 'react-icons/fa';
+import { FaUsers, FaClipboardList, FaHeart, FaSignOutAlt, FaHome, FaPlus, FaEdit, FaTrash, FaDollarSign, FaChartLine, FaBell, FaSearch, FaFilter, FaDownload, FaCheck, FaTimes, FaImage, FaUpload, FaPlay, FaVideo, FaUtensils, FaBook, FaHandsHelping, FaPrayingHands } from 'react-icons/fa';
 import { staffService, programsService, donationsService, videosService } from '../../supabaseService';
 import { authService } from '../../authService';
 import { storageService } from '../../storageService';
@@ -466,6 +466,15 @@ const StaffManagement = ({ addToast }) => {
 };
 
 // Programs Management Component
+const adminIconMap = {
+  FaHome: <FaHome />,
+  FaUtensils: <FaUtensils />,
+  FaBook: <FaBook />,
+  FaHeart: <FaHeart />,
+  FaHandsHelping: <FaHandsHelping />,
+  FaPrayingHands: <FaPrayingHands />,
+};
+
 const ProgramsManagement = ({ addToast }) => {
   const [programs, setPrograms] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -538,7 +547,7 @@ const ProgramsManagement = ({ addToast }) => {
           {programs.map((p) => (
             <div key={p.id} className="program-card-admin">
               <div className="program-card-header">
-                <div className="program-icon-display">{p.icon}</div>
+                <div className="program-icon-display">{adminIconMap[p.icon] || <FaHome />}</div>
                 <span className={`status-badge ${p.is_active ? 'active' : 'inactive'}`}>
                   {p.is_active ? 'Active' : 'Inactive'}
                 </span>

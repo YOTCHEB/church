@@ -3,6 +3,15 @@ import { FaHome, FaUtensils, FaBook, FaHeart, FaHandsHelping, FaPrayingHands, Fa
 import { programsService } from '../supabaseService';
 import './Programs.css';
 
+const iconMap = {
+  FaHome: <FaHome />,
+  FaUtensils: <FaUtensils />,
+  FaBook: <FaBook />,
+  FaHeart: <FaHeart />,
+  FaHandsHelping: <FaHandsHelping />,
+  FaPrayingHands: <FaPrayingHands />,
+};
+
 const Programs = () => {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +58,7 @@ const Programs = () => {
 
   const displayPrograms = programs.length > 0 ? programs.map((p, i) => ({
     ...p,
+    icon: iconMap[p.icon] || <FaHome />,
     image: p.image_url || programImages[i % programImages.length]
   })) : defaultPrograms;
 
