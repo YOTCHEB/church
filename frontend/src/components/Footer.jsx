@@ -1,4 +1,4 @@
-import { FaFacebookF, FaTwitter, FaInstagram, FaHeart, FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaInstagram, FaHeart, FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock, FaShieldAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import './Footer.css';
 
@@ -48,6 +48,7 @@ const Footer = () => {
                 <li><Link to="/programs"><span className="link-icon">›</span> Programs</Link></li>
                 <li><Link to="/donate"><span className="link-icon">›</span> Donate</Link></li>
                 <li><Link to="/contact"><span className="link-icon">›</span> Contact</Link></li>
+                <li><Link to="/admin" className="admin-link"><FaShieldAlt /> Admin</Link></li>
               </ul>
             </div>
 

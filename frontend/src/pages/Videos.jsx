@@ -1,36 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPlay, FaHeart, FaHandsHelping, FaUsers, FaArrowRight } from 'react-icons/fa';
+import { videosService } from '../supabaseService';
 import './Videos.css';
 
 const Videos = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const videos = [
-    {
-      id: 1,
-      src: 'videos/VID-20260110-WA0045.mp4',
-      title: 'Ministry Outreach',
-      description: 'Serving the community with God\'s love',
-      duration: '5:32',
-      category: 'Outreach'
-    },
-    {
-      id: 2,
-      src: 'videos/VID-20260110-WA0046.mp4',
-      title: 'Food Distribution',
-      description: 'Providing meals to families in need',
-      duration: '4:18',
-      category: 'Programs'
-    },
-    {
-      id: 3,
-      src: 'videos/VID-20260110-WA0047.mp4',
-      title: 'Community Impact',
-      description: 'Transforming lives through faith and action',
-      duration: '6:45',
-      category: 'Testimony'
-    }
-  ];
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const data = await videosService.getAllVideos();
+        setVideos(data || []);
+      } catch (err) {
+        console.error('Error fetching videos:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVideos();
+  }, []);
 
   const featuredStats = [
     { icon: <FaHeart />, number: '500+', label: 'Lives Changed' },
@@ -80,28 +70,43 @@ const Videos = () => {
             </p>
           </div>
 
-          <div className="videos-grid">
-            {videos.map((video) => (
-              <div 
-                key={video.id} 
-                className="video-card"
-                onClick={() => setSelectedVideo(video)}
-              >
-                <div className="video-thumbnail">
-                  <video src={video.src} muted loop onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }} />
-                  <div className="play-button">
-                    <FaPlay />
+          {loading ? (
+            <div className="videos-loading">
+              <p>Loading videos...</p>
+            </div>
+          ) : videos.length > 0 ? (
+            <div className="videos-grid">
+              {videos.map((video) => (
+                <div 
+                  key={video.id} 
+                  className="video-card"
+                  onClick={() => setSelectedVideo(video)}
+                >
+                  <div className="video-thumbnail">
+                    {video.thumbnail_url ? (
+                      <img src={video.thumbnail_url} alt={video.title} />
+                    ) : (
+                      <video src={video.video_url} muted loop onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }} />
+                    )}
+                    <div className="play-button">
+                      <FaPlay />
+                    </div>
+                    {video.duration && <span className="video-duration">{video.duration}</span>}
                   </div>
-                  <span className="video-duration">{video.duration}</span>
+                  <div className="video-info">
+                    <span className="video-category">{video.category}</span>
+                    <h3>{video.title}</h3>
+                    <p>{video.description}</p>
+                  </div>
                 </div>
-                <div className="video-info">
-                  <span className="video-category">{video.category}</span>
-                  <h3>{video.title}</h3>
-                  <p>{video.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="videos-empty">
+              <FaPlay style={{ fontSize: '3rem', color: '#c9a227', marginBottom: '1rem' }} />
+              <p>Videos coming soon. Check back later!</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -111,7 +116,7 @@ const Videos = () => {
           <div className="video-modal" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedVideo(null)}>×</button>
             <div className="modal-video-container">
-              <video src={selectedVideo.src} controls autoPlay />
+              <video src={selectedVideo.video_url} controls autoPlay />
             </div>
             <div className="modal-video-info">
               <span className="video-category">{selectedVideo.category}</span>

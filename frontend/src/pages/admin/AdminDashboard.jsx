@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FaUsers, FaClipboardList, FaHeart, FaSignOutAlt, FaHome, FaPlus, FaEdit, FaTrash, FaDollarSign, FaChartLine, FaBell, FaSearch, FaFilter, FaDownload, FaCheck, FaTimes, FaImage, FaUpload, FaPlay, FaVideo } from 'react-icons/fa';
 import { staffService, programsService, donationsService, videosService } from '../../supabaseService';
 import { authService } from '../../authService';
+import { storageService } from '../../storageService';
 import supabase from '../../supabase';
 import './AdminDashboard.css';
 
@@ -822,6 +823,13 @@ const VideosManagement = ({ addToast }) => {
     sort_order: 0, 
     is_featured: false 
   });
+  const [videoFile, setVideoFile] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const videoInputRef = useRef(null);
+  const thumbnailInputRef = useRef(null);
 
   useEffect(() => {
     const unsub = videosService.subscribeToVideos(setVideos);
@@ -841,6 +849,8 @@ const VideosManagement = ({ addToast }) => {
         sort_order: video.sort_order,
         is_featured: video.is_featured || false
       });
+      setVideoPreview(null);
+      setThumbnailPreview(video.thumbnail_url || null);
     } else {
       setEditing(null);
       setForm({ 
@@ -853,24 +863,69 @@ const VideosManagement = ({ addToast }) => {
         sort_order: videos.length, 
         is_featured: false 
       });
+      setVideoPreview(null);
+      setThumbnailPreview(null);
     }
+    setVideoFile(null);
+    setThumbnailFile(null);
     setShowModal(true);
+  };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setVideoFile(file);
+      setVideoPreview(file.name);
+    }
+  };
+
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setThumbnailFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setUploading(true);
     try {
+      let videoUrl = form.video_url;
+      let thumbnailUrl = form.thumbnail_url;
+
+      // Upload video file to Supabase Storage
+      if (videoFile) {
+        addToast('Uploading video... Please wait.', 'info');
+        const videoResult = await storageService.uploadVideo(videoFile);
+        videoUrl = videoResult.url;
+      }
+
+      // Upload thumbnail file to Supabase Storage
+      if (thumbnailFile) {
+        const thumbResult = await storageService.uploadVideoThumbnail(thumbnailFile);
+        thumbnailUrl = thumbResult.url;
+      }
+
+      const videoData = { ...form, video_url: videoUrl, thumbnail_url: thumbnailUrl };
+
       if (editing) {
-        await videosService.updateVideo(editing.id, form);
+        await videosService.updateVideo(editing.id, videoData);
         addToast('Video updated successfully!');
       } else {
-        await videosService.addVideo(form);
+        await videosService.addVideo(videoData);
         addToast('Video added successfully!');
       }
       setShowModal(false);
     } catch (err) {
       console.error(err);
       addToast('Error saving video. Please try again.', 'error');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -938,7 +993,7 @@ const VideosManagement = ({ addToast }) => {
           title={`${editing ? 'Edit' : 'Add'} Video`}
           onClose={() => setShowModal(false)}
           onSubmit={handleSubmit}
-          submitLabel={editing ? 'Update' : 'Add'}
+          submitLabel={uploading ? 'Uploading...' : (editing ? 'Update' : 'Add')}
         >
           <div className="form-group">
             <label>Title *</label>
@@ -949,12 +1004,68 @@ const VideosManagement = ({ addToast }) => {
             <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} rows="3" />
           </div>
           <div className="form-group">
-            <label>Video URL *</label>
-            <input type="text" value={form.video_url} onChange={(e) => setForm({...form, video_url: e.target.value})} placeholder="videos/filename.mp4" required />
+            <label>Upload Video *</label>
+            <div className="image-upload-container">
+              {videoPreview ? (
+                <div className="image-preview">
+                  <div style={{ padding: '1rem', textAlign: 'center', color: '#333' }}>
+                    <FaVideo style={{ fontSize: '2rem', color: '#1a365d', marginBottom: '0.5rem' }} />
+                    <p style={{ margin: 0, fontSize: '0.9rem', wordBreak: 'break-all' }}>{videoPreview}</p>
+                  </div>
+                  <button type="button" className="remove-image" onClick={() => {
+                    setVideoPreview(null);
+                    setVideoFile(null);
+                    if (videoInputRef.current) videoInputRef.current.value = '';
+                  }}>
+                    <FaTimes />
+                  </button>
+                </div>
+              ) : (
+                <div className="image-upload-placeholder" onClick={() => videoInputRef.current?.click()}>
+                  <FaUpload className="upload-icon" />
+                  <span>Click to upload video</span>
+                  <small>MP4, WebM, MOV (max 100MB)</small>
+                </div>
+              )}
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/*"
+                onChange={handleVideoChange}
+                className="image-file-input"
+              />
+            </div>
+            {!editing && !videoFile && <small style={{color:'#e53e3e'}}>Please select a video file to upload</small>}
           </div>
           <div className="form-group">
-            <label>Thumbnail URL</label>
-            <input type="text" value={form.thumbnail_url} onChange={(e) => setForm({...form, thumbnail_url: e.target.value})} placeholder="img/photos/thumbnail.jpg" />
+            <label>Upload Thumbnail</label>
+            <div className="image-upload-container">
+              {thumbnailPreview ? (
+                <div className="image-preview">
+                  <img src={thumbnailPreview} alt="Thumbnail Preview" />
+                  <button type="button" className="remove-image" onClick={() => {
+                    setThumbnailPreview(null);
+                    setThumbnailFile(null);
+                    if (thumbnailInputRef.current) thumbnailInputRef.current.value = '';
+                  }}>
+                    <FaTimes />
+                  </button>
+                </div>
+              ) : (
+                <div className="image-upload-placeholder" onClick={() => thumbnailInputRef.current?.click()}>
+                  <FaImage className="upload-icon" />
+                  <span>Click to upload thumbnail</span>
+                  <small>JPG, PNG, WebP</small>
+                </div>
+              )}
+              <input
+                ref={thumbnailInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleThumbnailChange}
+                className="image-file-input"
+              />
+            </div>
           </div>
           <div className="form-row">
             <div className="form-group">

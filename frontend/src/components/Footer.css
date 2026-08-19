@@ -157,6 +157,23 @@
   transform: translateX(4px);
 }
 
+/* Admin Link */
+.footer-links li a.admin-link {
+  color: var(--primary-gold);
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--primary-gold);
+  border-radius: var(--radius-sm);
+  margin-top: 0.5rem;
+  transition: all var(--transition-base);
+}
+
+.footer-links li a.admin-link:hover {
+  background: var(--primary-gold);
+  color: var(--primary-blue-dark);
+  padding-left: 0.75rem;
+}
+
 /* Contact Section */
 .contact-list {
   list-style: none;
